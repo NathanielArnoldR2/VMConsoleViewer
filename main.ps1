@@ -39,7 +39,7 @@ function Start-VMConsoleViewer {
     }
 
     # Once synchronized, hashtable values are shared between all in-process
-    # runspaces where the hashtable is used.
+    # runspaces where it is used.
     $SynchronizedData = [hashtable]::Synchronized(@{
       ImageRetrieverState = "Init"
       ConfirmWindowExit = $true
@@ -49,7 +49,7 @@ function Start-VMConsoleViewer {
       $script:JobScripts.Window,
       $true # Script, not command.
     )
-    $cmd.Parameters.Add("VMs", $VMs) # VMs[0] is the initially selected VM.
+    $cmd.Parameters.Add("VMs", $VMs) # VMs[0] will be the initially selected VM.
     $cmd.Parameters.Add("ImageWidth", $ImageWidth)
     $cmd.Parameters.Add("SynchronizedData", $SynchronizedData)
     
@@ -61,7 +61,7 @@ function Start-VMConsoleViewer {
       $true # Script, not command.
     )
     $cmd.Parameters.Add("ImageMode", "FullResolution")
-    $cmd.Parameters.Add("RetrievalInterval", 500) # milliseconds
+    $cmd.Parameters.Add("RetrievalInterval", 500) # ms between image updates.
     $cmd.Parameters.Add("SynchronizedData", $SynchronizedData)
     
     $Threads.ImageRetriever.Commands.AddCommand($cmd) |

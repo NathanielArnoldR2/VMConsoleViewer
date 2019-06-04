@@ -71,7 +71,7 @@ try {
     }
 
     # Initial loop or when signal to change VM feed was received. Either way,
-    # everything is reset.
+    # everything needs to be retrieved / calculated again.
     if ($null -eq $wmi.VM -or $wmi.VM.Name -ne $SynchronizedData.VMId) {
       $wmi.VM = Get-WmiObject -Class Msvm_ComputerSystem -Filter "Name = `"$($SynchronizedData.VMId)`""
   
@@ -151,7 +151,9 @@ try {
     }
 
     # For reasons unknown, four unnecessary bytes are prepended to the image
-    # data; they will mess up the image if not stripped.
+    # data; they will corrupt the image if not stripped. System.Drawing
+    # methods for constructing/saving a bmp from this data stream are not
+    # affected by these four extraneous bytes. Again, reason is unknown.
     $selectedData = [byte[]]::new($imageData.Count - 4)
     [array]::ConstrainedCopy(
       $imageData,
@@ -163,7 +165,8 @@ try {
   
     $pixelFormat = [System.Windows.Media.PixelFormats]::Bgr565
   
-    # Cached on the same terms as image dimensions.
+    # Cached on the same terms as image dimensions -- though probably not
+    # expensive enough to merit it.
     if ($stride -eq 0 -or ($i % 5) -eq 0) {
       $stride = (($imageWidth * $pixelFormat.BitsPerPixel + 31) -band (-bnot 31)) / 8
     }
@@ -176,8 +179,9 @@ try {
       [action]{
 
         # Cached on same terms as image dimensions/stride. If the image is
-        # is larger than our viewing dimensions, we'll "shrink" it in a
-        # uniform manner. If it's smaller, we're not going to blow it up.
+        # larger than our viewing dimensions, we'll "shrink" it uniformly
+        # to fit the available size; if it's smaller, we're not going to
+        # blow it up.
         if (($i % 5) -eq 0) {
           if (
             $imageWidth -lt $SynchronizedData.Image.MinWidth -and

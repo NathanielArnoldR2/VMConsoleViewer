@@ -27,7 +27,7 @@ try {
 
   # The window is equipped to handle image output w/ 4:3 and 16:9 aspect ratio;
   # other ratios (5:4, e.g. 1280x1024) may have white "letterbox" bars. The "No
-  # Video" text notification is "locked" at 4:3.
+  # Video" text notification is "locked" at the 4:3 ratio.
   $ImageMinHeight = $ImageWidth / 16 * 9
   $ImageMaxHeight = $ImageWidth / 4 * 3
 
